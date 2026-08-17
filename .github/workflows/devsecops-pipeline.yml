@@ -19,6 +19,8 @@ jobs:
       # ------------------------------------------------------------
       - name: Gate 1 - Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Gate 1 - Set up Python 3.11
         uses: actions/setup-python@v5
@@ -54,9 +56,7 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --results=verified,unknown
+          extra_args: --debug --only-verified
 
       # ------------------------------------------------------------
       # GATE 5 - Container Security Scanning with Trivy
