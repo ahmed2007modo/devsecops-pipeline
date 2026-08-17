@@ -26,24 +26,20 @@ jobs:
       # GATE 2 - SAST with Bandit
       - name: Gate 2 - Install Bandit
         run: pip install bandit
-        continue-on-error: true
 
       - name: Gate 2 - Run Bandit (fail on HIGH severity only)
         run: |
-          bandit -r app -lll -f txt || echo "Bandit check failed or completed"
+          bandit -r app -lll -f txt
           echo "Gate 2 (SAST) passed - no high-severity flaws detected."
-        continue-on-error: true
 
       # GATE 3 - SCA with pip-audit
       - name: Gate 3 - Install pip-audit
         run: pip install pip-audit
-        continue-on-error: true
 
       - name: Gate 3 - Scan requirements.txt for known CVEs
         run: |
-          pip-audit -r requirements.txt || echo "pip-audit check failed or completed"
+          pip-audit -r requirements.txt
           echo "Gate 3 (SCA) passed - no known vulnerable dependencies."
-        continue-on-error: true
 
       # GATE 4 - Secret Scanning with TruffleHog
       - name: Gate 4 - Run TruffleHog secret scanning
@@ -51,22 +47,19 @@ jobs:
         with:
           path: ./
           extra_args: --debug --only-verified
-        continue-on-error: true
 
       # GATE 5 - Container Security Scanning with Trivy
       - name: Gate 5 - Build Docker image
         run: docker build -t ${{ github.repository }}:${{ github.sha }} .
-        continue-on-error: true
 
       - name: Gate 5 - Trivy scan built image
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ github.repository }}:${{ github.sha }}
           format: table
-          exit-code: "0"
+          exit-code: "1"
           ignore-unfixed: true
           severity: CRITICAL,HIGH
-        continue-on-error: true
 
       # FINAL STEP - Deployment readiness
       - name: Security Verification Passed - Ready for Deployment
