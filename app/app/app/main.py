@@ -36,7 +36,7 @@ def login(payload: LoginRequest) -> dict:
     token = jwt.encode(
         {
             "sub": payload.username,
-            "exp": datetime.datetime.now(datetime.timezone.utc)
+            "exp": datetime.datetime.now(datetime.UTC)
             + datetime.timedelta(minutes=JWT_EXPIRES_MINUTES),
         },
         JWT_SECRET_KEY,
