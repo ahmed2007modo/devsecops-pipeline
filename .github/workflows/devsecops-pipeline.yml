@@ -14,22 +14,16 @@ jobs:
     name: Security Gates (1-5)
     runs-on: ubuntu-latest
     steps:
-      # ------------------------------------------------------------
       # GATE 1 - Checkout & Setup
-      # ------------------------------------------------------------
       - name: Gate 1 - Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Gate 1 - Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ------------------------------------------------------------
       # GATE 2 - SAST with Bandit
-      # ------------------------------------------------------------
       - name: Gate 2 - Install Bandit
         run: pip install bandit
 
@@ -38,9 +32,7 @@ jobs:
           bandit -r app -lll -f txt
           echo "Gate 2 (SAST) passed - no high-severity flaws detected."
 
-      # ------------------------------------------------------------
       # GATE 3 - SCA with pip-audit
-      # ------------------------------------------------------------
       - name: Gate 3 - Install pip-audit
         run: pip install pip-audit
 
@@ -49,18 +41,14 @@ jobs:
           pip-audit -r requirements.txt
           echo "Gate 3 (SCA) passed - no known vulnerable dependencies."
 
-      # ------------------------------------------------------------
       # GATE 4 - Secret Scanning with TruffleHog
-      # ------------------------------------------------------------
       - name: Gate 4 - Run TruffleHog secret scanning
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           extra_args: --debug --only-verified
 
-      # ------------------------------------------------------------
       # GATE 5 - Container Security Scanning with Trivy
-      # ------------------------------------------------------------
       - name: Gate 5 - Build Docker image
         run: docker build -t ${{ github.repository }}:${{ github.sha }} .
 
@@ -73,8 +61,6 @@ jobs:
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
-      # ------------------------------------------------------------
       # FINAL STEP - Deployment readiness
-      # ------------------------------------------------------------
       - name: Security Verification Passed - Ready for Deployment
         run: echo "Security Verification Passed - Ready for Deployment"
